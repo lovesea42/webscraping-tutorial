@@ -1,16 +1,21 @@
 import csv
+import random
 from urllib import parse
 
 import re
 import requests
 from bs4 import BeautifulSoup as BS
 
-# 页的数量
+# 每页的图书数量
 DOUBAN_BOOK_PAGE_SIZE = 20
 # 至少的评价分数
 DOUBAN_BOOK_STAR = 8.0
 # 至少的评价数量
 DOUBAN_BOOK_COMMENT = 10
+# 错误次数,超过次数
+ERROR_COUNT = 10
+#代理
+pro = ['61.163.39.70:9999']
 
 DOUBAN_BOOK_COMMON_HEADER = {
               'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
@@ -18,13 +23,14 @@ class DoubanBookRecommend:
 
       #初始化爬虫url
       def __init__(self,type):
-
+          
           self.url = 'https://book.douban.com/tag/' + parse.quote(type) + '?type=R&start='
           self.data = []
+          self.error_count = 0
 
       def _get_main_html(self,url):
 
-          r = requests.get(url, headers=DOUBAN_BOOK_COMMON_HEADER)
+          r = requests.get(url, headers=DOUBAN_BOOK_COMMON_HEADER,proxies={'http': random.choice(pro)})
           content = r.text
           #print(content)
 
@@ -67,6 +73,9 @@ class DoubanBookRecommend:
 
               detail = self._parser_detail(url)
 
+              if detail == None:
+                  continue
+
               dic1 = {
                   'comment' : comment,
                   'rating_nums' : rating_nums,
@@ -82,6 +91,10 @@ class DoubanBookRecommend:
       #解析详细的页面
       def _parser_detail(self,url):
           r = requests.get(url, headers=DOUBAN_BOOK_COMMON_HEADER)
+          if r.status_code is not 200:
+             self.error_count += 1
+             return None
+
           content = r.text
           soup = BS(content, 'lxml')
           divs = soup.find_all(id='db-tags-section')
@@ -116,13 +129,17 @@ class DoubanBookRecommend:
 
       def get_data_by_page(self,page):
           for page in range(0,page):
+              #判断是否超过最大错误次数
+              if self.error_count > ERROR_COUNT:
+                  break
+
               url = self.url + str(page * DOUBAN_BOOK_PAGE_SIZE)
               html = self._get_main_html(url)
 
-          self._output_to_csv("D:/test1.csv")
+          self._output_to_csv("/test1.csv")
 
 
 if __name__ == '__main__':
     douban = DoubanBookRecommend('编程')
-    douban.get_data_by_page(100)
+    douban.get_data_by_page(1)
 
