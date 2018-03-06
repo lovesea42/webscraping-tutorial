@@ -20,11 +20,13 @@ class DoubanBookRecommend:
       #初始化爬虫url
       def __init__(self,type):
 
+          print ('初始化爬虫开始...')
           self.url = 'https://book.douban.com/tag/' + parse.quote(type) + '?type=R&start='
           self.data = []
 
       def _get_main_html(self,url):
 
+          print('爬虫开始%s...' % (url))
           r = requests.get(url, headers=DOUBAN_BOOK_COMMON_HEADER)
           content = r.text
           #print(content)
@@ -134,5 +136,5 @@ class DoubanBookRecommend:
 
 if __name__ == '__main__':
     douban = DoubanBookRecommend('编程')
-    douban.get_data_by_page(1)
+    douban.get_data_by_page(3)
 
