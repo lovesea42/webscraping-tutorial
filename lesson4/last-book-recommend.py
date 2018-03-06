@@ -97,6 +97,13 @@ class DoubanBookRecommend:
               for dt in a:
                   tags.append(dt.get_text())
 
+          info = soup.find(id='info')
+          if info is not None:
+              isbn = info.find('span',text='ISBN:')
+              if isbn is not None:
+                  isbnp = isbn.parent.text
+                  print('isbn%s' %isbnp)
+
 
           return {
               "tags" : tags
