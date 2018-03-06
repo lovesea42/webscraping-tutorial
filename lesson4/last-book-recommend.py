@@ -82,7 +82,7 @@ class DoubanBookRecommend:
               print(comment)
               self.data.append(dic1)
 
-              self._output_to_csv("D:/test2.csv")
+              self._output_to_csv("book.csv")
 
       #解析详细的页面
       def _parser_detail(self,url):
