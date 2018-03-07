@@ -162,5 +162,5 @@ class DoubanBookRecommend:
 
 if __name__ == '__main__':
     douban = DoubanBookRecommend('编程','localhost',27017)
-    douban.get_data_by_page(3)
+    douban.get_data_by_page(50)
 
