@@ -75,7 +75,8 @@ class DoubanBookRecommend:
                   'rating_nums' : rating_nums,
                   'name' : name,
                   'url' : url,
-                  'tags' : ','.join(detail['tags'])
+                  'tags' : ','.join(detail['tags']),
+                  'isbn' : detail['isbn']
               }
               print(rating_nums)
               print(name)
@@ -97,16 +98,20 @@ class DoubanBookRecommend:
               for dt in a:
                   tags.append(dt.get_text())
 
+          isbn = -1
           info = soup.find(id='info')
-          if info is not None:
+          if info:
               isbn = info.find('span',text='ISBN:')
-              if isbn is not None:
+              if isbn:
                   isbnp = isbn.parent.text
-                  print('isbn%s' %isbnp)
+                  isbn_num = re.search(r'ISBN: (\d+)',isbnp,re.M|re.I)
+                  if isbn_num:
+                      isbn = isbn_num.group(1)
 
 
           return {
-              "tags" : tags
+              "tags" : tags,
+              "isbn" : str(isbn)
           }
 
 
@@ -116,12 +121,12 @@ class DoubanBookRecommend:
                   writer = csv.writer(csv_file, dialect='excel')
 
                   # 先写入columns_name
-                  writer.writerow(["name", "comment", "rating_nums","tags"])
+                  writer.writerow(["name","isbn", "comment", "rating_nums","tags"])
 
                   self.data = sorted(self.data, key=lambda x: float(x['comment']) * x['rating_nums'],reverse=True)
 
                   for dt in self.data:
-                     writer.writerow([dt["name"],dt["comment"],dt["rating_nums"],dt["tags"]])
+                     writer.writerow([dt["name"],dt["isbn"],dt["comment"],dt["rating_nums"],dt["tags"]])
 
           except Exception as e:
               print("Write an CSV file to path: %s, Case: %s" % (path,e))
