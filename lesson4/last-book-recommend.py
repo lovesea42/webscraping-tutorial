@@ -1,10 +1,12 @@
 import csv
+import re
 import threading
 from urllib import parse
 
-import re
 import requests
 from bs4 import BeautifulSoup as BS
+
+from pymongo import MongoClient
 
 # 页的数量
 DOUBAN_BOOK_PAGE_SIZE = 20
@@ -18,11 +20,13 @@ DOUBAN_BOOK_COMMON_HEADER = {
 class DoubanBookRecommend:
 
       #初始化爬虫url
-      def __init__(self,type):
+      def __init__(self,type,host,port):
 
           print ('初始化爬虫开始...')
           self.url = 'https://book.douban.com/tag/' + parse.quote(type) + '?type=R&start='
           self.data = []
+          self.conn = MongoClient(host, port)
+          self.db = self.conn.book
 
       def _get_main_html(self,url):
 
@@ -84,6 +88,7 @@ class DoubanBookRecommend:
               self.data.append(dic1)
 
               self._output_to_csv("book.csv")
+              self._output_to_mongodb()
 
       #解析详细的页面
       def _parser_detail(self,url):
@@ -113,6 +118,15 @@ class DoubanBookRecommend:
               "tags" : tags,
               "isbn" : str(isbn)
           }
+
+      def add_book_data(self, data):
+          self.db.dangdang.insert(data)
+
+
+      def _output_to_mongodb(self):
+          self.db.dangdang.remove()
+          for dt in self.data:
+              self.add_book_data(dt)
 
 
       def _output_to_csv(self,path):
@@ -147,6 +161,6 @@ class DoubanBookRecommend:
               thread[i].join()
 
 if __name__ == '__main__':
-    douban = DoubanBookRecommend('编程')
+    douban = DoubanBookRecommend('编程','localhost',27017)
     douban.get_data_by_page(3)
 
