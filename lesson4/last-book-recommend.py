@@ -1,9 +1,11 @@
 import csv
+import random
 import re
 import threading
 from urllib import parse
 
 import requests
+import sys
 from bs4 import BeautifulSoup as BS
 
 from pymongo import MongoClient
@@ -17,6 +19,10 @@ DOUBAN_BOOK_COMMENT = 10
 
 DOUBAN_BOOK_COMMON_HEADER = {
               'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
+
+#代理
+pro = ['61.163.39.70:9999']
+
 class DoubanBookRecommend:
 
       #初始化爬虫url
@@ -31,7 +37,7 @@ class DoubanBookRecommend:
       def _get_main_html(self,url):
 
           print('爬虫开始%s...' % (url))
-          r = requests.get(url, headers=DOUBAN_BOOK_COMMON_HEADER)
+          r = requests.get(url, headers=DOUBAN_BOOK_COMMON_HEADER,proxies={'http': random.choice(pro)})
           content = r.text
           #print(content)
 
@@ -72,6 +78,24 @@ class DoubanBookRecommend:
               if len(url) == 0:
                   continue
 
+              author = ''
+              price = 0.0
+              date = ''
+              publisher = ''
+
+              # 获取pub信息
+              pub = div.find(class_='pub')
+              if pub:
+                  pub = pub.get_text()
+
+                  pub = ''.join(pub.split())
+                  pub = pub.split('/')
+                  size = len(pub)
+                  author = pub[0]
+                  price = float(re.findall(r"\d+\.?\d*", pub[size - 1])[0])
+                  date = pub[size - 2]
+                  publisher = pub[size - 3]
+
               detail = self._parser_detail(url)
 
               dic1 = {
@@ -80,11 +104,13 @@ class DoubanBookRecommend:
                   'name' : name,
                   'url' : url,
                   'tags' : ','.join(detail['tags']),
-                  'isbn' : detail['isbn']
+                  'isbn' : detail['isbn'],
+                  'author' : author,
+                  'price' : price,
+                   'date' : date,
+                  'publisher':publisher
               }
-              print(rating_nums)
-              print(name)
-              print(comment)
+              print(dic1)
               self.data.append(dic1)
 
               self._output_to_csv("book.csv")
@@ -162,5 +188,7 @@ class DoubanBookRecommend:
 
 if __name__ == '__main__':
     douban = DoubanBookRecommend('编程','localhost',27017)
-    douban.get_data_by_page(50)
+    page = int(sys.argv[1])
+    print('本次爬虫页数：%d' % (page))
+    douban.get_data_by_page(page)
 
