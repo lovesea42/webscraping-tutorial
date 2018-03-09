@@ -150,7 +150,6 @@ class DoubanBookRecommend:
 
 
       def _output_to_mongodb(self):
-          self.db.dangdang.remove()
           for dt in self.data:
               self.add_book_data(dt)
 
@@ -172,6 +171,8 @@ class DoubanBookRecommend:
               print("Write an CSV file to path: %s, Case: %s" % (path,e))
 
       def get_data_by_page(self,page):
+
+          self.db.dangdang.remove()
 
           thread = []
           for page in range(0,page):
