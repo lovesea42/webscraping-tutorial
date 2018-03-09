@@ -15,7 +15,7 @@ DOUBAN_BOOK_COMMENT = 10
 # 错误次数,超过次数
 ERROR_COUNT = 10
 #代理
-pro = ['61.163.39.70:9999']
+pro = ['106.46.136.112:808']
 
 DOUBAN_BOOK_COMMON_HEADER = {
               'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
