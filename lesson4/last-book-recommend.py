@@ -177,15 +177,16 @@ class DoubanBookRecommend:
           thread = []
           for page in range(0,page):
               url = self.url + str(page * DOUBAN_BOOK_PAGE_SIZE)
-              t = threading.Thread(target=self._get_main_html,
-                                   args=(url,))
-              thread.append(t)
-
-          for i in range(0, page):
-              thread[i].start()
-
-          for i in range(0, page):
-              thread[i].join()
+              self._get_main_html(url)
+              # t = threading.Thread(target=self._get_main_html,
+              #                      args=(url,))
+          #     thread.append(t)
+          #
+          # for i in range(0, page):
+          #     thread[i].start()
+          #
+          # for i in range(0, page):
+          #     thread[i].join()
 
 if __name__ == '__main__':
     douban = DoubanBookRecommend('编程','localhost',27017)
