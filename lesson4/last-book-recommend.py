@@ -45,6 +45,7 @@ class DoubanBookRecommend:
           print('爬虫开始%s...' % (url))
           r = requests.get(url, headers=DOUBAN_BOOK_COMMON_HEADER, proxies=proxie, verify=False, timeout=20)
           content = r.text
+          print (content)
           #print(content)
 
           soup = BS(content, 'lxml')
