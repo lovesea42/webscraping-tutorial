@@ -117,11 +117,11 @@ class DoubanBookRecommend:
                   'publisher':publisher,
                   '_id' : detail['isbn']
               }
-              #print(dic1)
+              print(dic1)
               self.data.append(dic1)
 
               self._output_to_csv("book.csv")
-              self._output_to_mongodb()
+              self._output_to_mongodb(dic1)
 
       #解析详细的页面
       def _parser_detail(self,url):
@@ -159,9 +159,8 @@ class DoubanBookRecommend:
               print("error to insert data to mongodb %s" %e)
 
 
-      def _output_to_mongodb(self):
-          for dt in self.data:
-              self.add_book_data(dt)
+      def _output_to_mongodb(self,data):
+           self.add_book_data(data)
 
 
       def _output_to_csv(self,path):
