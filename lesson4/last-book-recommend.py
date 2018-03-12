@@ -45,7 +45,6 @@ class DoubanBookRecommend:
           print('爬虫开始%s...' % (url))
           r = requests.get(url, headers=DOUBAN_BOOK_COMMON_HEADER, proxies=proxie, verify=False, timeout=20)
           content = r.text
-          print (content)
           #print(content)
 
           soup = BS(content, 'lxml')
@@ -115,9 +114,10 @@ class DoubanBookRecommend:
                   'author' : author,
                   'price' : price,
                    'date' : date,
-                  'publisher':publisher
+                  'publisher':publisher,
+                  '_id' : detail['isbn']
               }
-              print(dic1)
+              #print(dic1)
               self.data.append(dic1)
 
               self._output_to_csv("book.csv")
@@ -153,7 +153,10 @@ class DoubanBookRecommend:
           }
 
       def add_book_data(self, data):
-          self.db.dangdang.insert(data)
+          try:
+             self.db.dangdang.insert(data)
+          except Exception as e:
+              print("error to insert data to mongodb %s" %e)
 
 
       def _output_to_mongodb(self):
@@ -181,7 +184,7 @@ class DoubanBookRecommend:
 
           self.db.dangdang.remove()
 
-          thread = []
+          #thread = []
           for page in range(0,page):
               url = self.url + str(page * DOUBAN_BOOK_PAGE_SIZE)
               self._get_main_html(url)

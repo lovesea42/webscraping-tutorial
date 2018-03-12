@@ -15,10 +15,17 @@ DOUBAN_BOOK_COMMENT = 10
 # 错误次数,超过次数
 ERROR_COUNT = 10
 #代理
-pro = ['106.46.136.112:808']
+proxie = {
+        'http' : 'http://122.193.14.102:80'
+    }
 
 DOUBAN_BOOK_COMMON_HEADER = {
-              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
+              'Host':"book.douban.com",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+              "Accept-Encoding": "gzip, deflate, br",
+              "Accept-Language": "zh-CN,zh;q=0.9",
+               "Connection": "keep-alive",
+              'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'}
 class DoubanBookRecommend:
 
       #初始化爬虫url
@@ -30,7 +37,7 @@ class DoubanBookRecommend:
 
       def _get_main_html(self,url):
 
-          r = requests.get(url, headers=DOUBAN_BOOK_COMMON_HEADER,proxies={'http': random.choice(pro)})
+          r = requests.get(url, headers=DOUBAN_BOOK_COMMON_HEADER,proxies = proxie,verify=False,timeout = 20)
           content = r.text
           #print(content)
 
