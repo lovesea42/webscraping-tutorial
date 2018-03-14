@@ -115,7 +115,8 @@ class DoubanBookRecommend:
                   'price' : price,
                    'date' : date,
                   'publisher':publisher,
-                  '_id' : detail['isbn']
+                  '_id' : detail['isbn'],
+                  'img' : detail['img']
               }
               print(dic1)
               self.data.append(dic1)
@@ -129,6 +130,7 @@ class DoubanBookRecommend:
           content = r.text
           soup = BS(content, 'lxml')
           divs = soup.find_all(id='db-tags-section')
+
 
           tags = []
           for div in divs:
@@ -146,10 +148,15 @@ class DoubanBookRecommend:
                   if isbn_num:
                       isbn = isbn_num.group(1)
 
+          nbg = soup.find(class_='nbg')
+          img = ''
+          if nbg:
+              img = nbg['href']
 
           return {
               "tags" : tags,
-              "isbn" : str(isbn)
+              "isbn" : str(isbn),
+              "img" : img
           }
 
       def add_book_data(self, data):
